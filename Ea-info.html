@@ -1,32 +1,64 @@
-module.exports = async(config, origin_id) => {
-    return new Promise(async (resolve, reject) => {
-        const axios = require('axios')
-        let url = `https://api1.origin.com/avatar/user/${origin_id}/avatars?size=2`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EA User Lookup</title>
+    <script>
+        async function fetchUserId() {
+            const accessToken = document.getElementById("accessToken").value;
+            const username = document.getElementById("username").value;
 
-        await axios({
-            url: url,
-            method: 'GET',
-            headers: {
-                authtoken: config.auth_token
+            if (!accessToken || !username) {
+                alert("Access Token and Username are required.");
+                return;
             }
-        }).then(res => {
-            // console.log(res.data.users)
-            resolve(res.data.users[0].avatar.link)
 
-        }).catch(async (e) => {
-            // console.log(e)
-            // console.log(e.response.status)
-            resolve(undefined)
+            try {
+                const response = await fetch(`http://localhost:3000/getUserId?name=${encodeURIComponent(username)}&token=${encodeURIComponent(accessToken)}`);
+                const data = await response.json();
+                if (data.userId) {
+                    document.getElementById("userId").value = data.userId;
+                } else {
+                    alert("User not found.");
+                }
+            } catch (error) {
+                alert("Error fetching User ID.");
+            }
+        }
 
-            // if (e.response.data?.rootCause?.cause === "invalid_token") {
-            //     let auto_refresh_token = require('../auto_refresh_token')
-            //     await auto_refresh_token(config)
-            //     module.exports(config, origin_id)
-            // }else{
-            //     resolve()
-            // }
-        })
+        async function fetchUsername() {
+            const accessToken = document.getElementById("accessToken").value;
+            const userId = document.getElementById("userId").value;
 
-    })
+            if (!accessToken || !userId) {
+                alert("Access Token and User ID are required.");
+                return;
+            }
 
-}
+            try {
+                const response = await fetch(`http://localhost:3000/getUsername?id=${encodeURIComponent(userId)}&token=${encodeURIComponent(accessToken)}`);
+                const data = await response.json();
+                if (data.eaId) {
+                    document.getElementById("username").value = data.eaId;
+                } else {
+                    alert("Username not found.");
+                }
+            } catch (error) {
+                alert("Error fetching Username.");
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>EA User Lookup</h1>
+
+    <label>Access Token: <input type="text" id="accessToken"></label><br><br>
+    
+    <label>Username: <input type="text" id="username"></label>
+    <button onclick="fetchUserId()">Get User ID</button><br>
+    
+    <label>User ID: <input type="text" id="userId"></label>
+    <button onclick="fetchUsername()">Get Username</button><br><br>
+</body>
+</html>
