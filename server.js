@@ -4,11 +4,15 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 
 const app = express();
-app.use(cors()); // Enable CORS for all origins
+const PORT = process.env.PORT || 8080; // Use Railway's assigned port
+
+app.use(cors({
+    origin: "*",
+    methods: "GET,POST",
+    allowedHeaders: "Content-Type,Authorization"
+}));
 
 app.use(bodyParser.json());
-
-const PORT = 3000;
 
 // Fetch User ID from username
 app.get("/getUserId", async (req, res) => {
@@ -20,12 +24,12 @@ app.get("/getUserId", async (req, res) => {
 
     try {
         const response = await axios.get(`https://api3.origin.com/atom/users?eaId=${name}`, {
-            headers: {
-                authtoken: token
-            }
+            headers: { authtoken: token }
         });
 
-        if (!response.data.userId) {
+        console.log("Response Data:", response.data); // Debugging
+
+        if (!response.data || !response.data.userId) {
             return res.status(404).json({ error: "User not found" });
         }
 
@@ -46,12 +50,12 @@ app.get("/getUsername", async (req, res) => {
 
     try {
         const response = await axios.get(`https://api3.origin.com/atom/users?userIds=${id}`, {
-            headers: {
-                authtoken: token
-            }
+            headers: { authtoken: token }
         });
 
-        if (!response.data.users || response.data.users.length === 0) {
+        console.log("Response Data:", response.data); // Debugging
+
+        if (!response.data || !response.data.users || response.data.users.length === 0) {
             return res.status(404).json({ error: "User not found" });
         }
 
@@ -62,4 +66,4 @@ app.get("/getUsername", async (req, res) => {
     }
 });
 
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
