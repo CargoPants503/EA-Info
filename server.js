@@ -4,15 +4,16 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 
 const app = express();
-const PORT = process.env.PORT || 8080; // Use Railway's assigned port
+const PORT = process.env.PORT || 8080; // Use Railway-assigned port
 
-app.use(cors({
-    origin: "*",
-    methods: "GET,POST",
-    allowedHeaders: "Content-Type,Authorization"
-}));
-
+// Enable CORS
+app.use(cors({ origin: "*" }));
 app.use(bodyParser.json());
+
+// Default route (for testing if server is running)
+app.get("/", (req, res) => {
+    res.send("Server is running!");
+});
 
 // Fetch User ID from username
 app.get("/getUserId", async (req, res) => {
@@ -66,4 +67,5 @@ app.get("/getUsername", async (req, res) => {
     }
 });
 
+// Start the server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
