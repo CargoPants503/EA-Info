@@ -20,6 +20,7 @@ app.get("/getUserId", async (req, res) => {
     const { name, token } = req.query;
 
     if (!name || !token) {
+        console.log("Missing parameters in /getUserId route");
         return res.status(400).json({ error: "Missing parameters" });
     }
 
@@ -28,7 +29,7 @@ app.get("/getUserId", async (req, res) => {
             headers: { authtoken: token }
         });
 
-        console.log("Response Data:", response.data); // Debugging
+        console.log("Response Data (getUserId):", response.data); // Debugging
 
         if (!response.data || !response.data.userId) {
             return res.status(404).json({ error: "User not found" });
@@ -46,6 +47,7 @@ app.get("/getUsername", async (req, res) => {
     const { id, token } = req.query;
 
     if (!id || !token) {
+        console.log("Missing parameters in /getUsername route");
         return res.status(400).json({ error: "Missing parameters" });
     }
 
@@ -54,7 +56,7 @@ app.get("/getUsername", async (req, res) => {
             headers: { authtoken: token }
         });
 
-        console.log("Response Data:", response.data); // Debugging
+        console.log("Response Data (getUsername):", response.data); // Debugging
 
         if (!response.data || !response.data.users || response.data.users.length === 0) {
             return res.status(404).json({ error: "User not found" });
