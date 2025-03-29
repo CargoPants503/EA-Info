@@ -15,7 +15,7 @@
             }
 
             try {
-                const response = await fetch(`http://localhost:3000/getUserId?name=${encodeURIComponent(username)}&token=${encodeURIComponent(accessToken)}`);
+                const response = await fetch(`https://ea-info-production.up.railway.app/getUserId?name=${encodeURIComponent(username)}&token=${encodeURIComponent(accessToken)}`);
                 const data = await response.json();
                 if (data.userId) {
                     document.getElementById("userId").value = data.userId;
@@ -37,7 +37,7 @@
             }
 
             try {
-                const response = await fetch(`http://localhost:3000/getUsername?id=${encodeURIComponent(userId)}&token=${encodeURIComponent(accessToken)}`);
+                const response = await fetch(`https://ea-info-production.up.railway.app/getUsername?id=${encodeURIComponent(userId)}&token=${encodeURIComponent(accessToken)}`);
                 const data = await response.json();
                 if (data.eaId) {
                     document.getElementById("username").value = data.eaId;
