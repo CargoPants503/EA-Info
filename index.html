@@ -3,62 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EA User Lookup</title>
-    <script>
-        async function fetchUserId() {
-            const accessToken = document.getElementById("accessToken").value;
-            const username = document.getElementById("username").value;
+    <title>Origin API Fetch</title>
+</head>
+<body>
+    <h2>Fetch User ID from Username</h2>
+    <input type="text" id="username" placeholder="Enter EA ID">
+    <input type="text" id="token" placeholder="Enter Token">
+    <button onclick="getUserId()">Get User ID</button>
+    <p id="userIdResult"></p>
 
-            if (!accessToken || !username) {
-                alert("Access Token and Username are required.");
+    <h2>Fetch Username from User ID</h2>
+    <input type="text" id="userId" placeholder="Enter User ID">
+    <input type="text" id="token2" placeholder="Enter Token">
+    <button onclick="getUsername()">Get Username</button>
+    <p id="usernameResult"></p>
+
+    <script>
+        const cloudflareProxy = "https://aged-hall-c269.nuublover29mc.workers.dev"; // Your Cloudflare Worker URL
+
+        async function getUserId() {
+            const name = document.getElementById("username").value;
+            const token = document.getElementById("token").value;
+
+            if (!name || !token) {
+                alert("Please enter both username and token.");
                 return;
             }
 
             try {
-                const response = await fetch(`https://ea-info-production.up.railway.app/getUserId?name=${encodeURIComponent(username)}&token=${encodeURIComponent(accessToken)}`);
-                const data = await response.json();
-                if (data.userId) {
-                    document.getElementById("userId").value = data.userId;
+                const response = await fetch(`${cloudflareProxy}?url=${encodeURIComponent("https://api3.origin.com/atom/users?eaId=" + name)}&token=${encodeURIComponent(token)}`);
+                if (!response.ok) throw new Error("User not found or invalid token");
+
+                const contentType = response.headers.get("Content-Type");
+
+                if (contentType && contentType.includes("xml")) {
+                    const xmlText = await response.text(); // Read the response as text (XML)
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(xmlText, "application/xml");
+                    const userId = xmlDoc.getElementsByTagName("userId")[0].textContent;
+                    document.getElementById("userIdResult").innerText = `User ID: ${userId}`;
+                } else if (contentType && contentType.includes("json")) {
+                    const data = await response.json(); // Parse JSON if response is JSON
+                    document.getElementById("userIdResult").innerText = `User ID: ${data.userId}`;
                 } else {
-                    alert("User not found.");
+                    throw new Error("Unexpected response format.");
                 }
             } catch (error) {
-                alert("Error fetching User ID.");
+                document.getElementById("userIdResult").innerText = `Error: ${error.message}`;
             }
         }
 
-        async function fetchUsername() {
-            const accessToken = document.getElementById("accessToken").value;
-            const userId = document.getElementById("userId").value;
+        async function getUsername() {
+            const id = document.getElementById("userId").value;
+            const token = document.getElementById("token2").value;
 
-            if (!accessToken || !userId) {
-                alert("Access Token and User ID are required.");
+            if (!id || !token) {
+                alert("Please enter both user ID and token.");
                 return;
             }
 
             try {
-                const response = await fetch(`https://ea-info-production.up.railway.app/getUsername?id=${encodeURIComponent(userId)}&token=${encodeURIComponent(accessToken)}`);
-                const data = await response.json();
-                if (data.eaId) {
-                    document.getElementById("username").value = data.eaId;
+                const response = await fetch(`${cloudflareProxy}?url=${encodeURIComponent("https://api3.origin.com/atom/users?userIds=" + id)}&token=${encodeURIComponent(token)}`);
+                if (!response.ok) throw new Error("User not found or invalid token");
+
+                const contentType = response.headers.get("Content-Type");
+
+                if (contentType && contentType.includes("xml")) {
+                    const xmlText = await response.text(); // Read the response as text (XML)
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(xmlText, "application/xml");
+                    const EAID = xmlDoc.getElementsByTagName("EAID")[0].textContent;
+                    document.getElementById("usernameResult").innerText = `EA ID: ${EAID}`;
+                } else if (contentType && contentType.includes("json")) {
+                    const data = await response.json(); // Parse JSON if response is JSON
+                    document.getElementById("usernameResult").innerText = `EA ID: ${data.users[0].EAID}`;
                 } else {
-                    alert("Username not found.");
+                    throw new Error("Unexpected response format.");
                 }
             } catch (error) {
-                alert("Error fetching Username.");
+                document.getElementById("usernameResult").innerText = `Error: ${error.message}`;
             }
         }
     </script>
-</head>
+</body>
 <body>
-    <h1>EA User Lookup</h1>
+	<h2>To Get Token, visit this link and copy what's after the "access_token" </h2>
+	<a href="https://accounts.ea.com/connect/auth?client_id=ORIGIN_JS_SDK&response_type=token&redirect_uri=nucleus:rest&prompt=none&release_type=prod">https://accounts.ea.com/</a><h2></h2>
+	<a> example: QVQxOjIuMDozLjA6MjQwOjZQbm40WVM3aU96WHY3MlZMYUJRSHBQdWZpRXFxYVg4SlFFOjM5NDMzOnJtbTlo </a> 
 
-    <label>Access Token: <input type="text" id="accessToken"></label><br><br>
-    
-    <label>Username: <input type="text" id="username"></label>
-    <button onclick="fetchUserId()">Get User ID</button><br>
-    
-    <label>User ID: <input type="text" id="userId"></label>
-    <button onclick="fetchUsername()">Get Username</button><br><br>
 </body>
 </html>
