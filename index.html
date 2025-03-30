@@ -4,23 +4,88 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Origin API Fetch</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            margin: 20px auto;
+        }
+        h2 {
+            color: #333;
+        }
+        input {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            background-color: #007BFF;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        p {
+            font-size: 14px;
+            color: #555;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #777;
+        }
+    </style>
 </head>
 <body>
-    <h2>Fetch User ID from Username</h2>
-    <input type="text" id="username" placeholder="Enter EA ID">
-    <input type="text" id="token" placeholder="Enter Token">
-    <button onclick="getUserId()">Get User ID</button>
-    <p id="userIdResult"></p>
-
-    <h2>Fetch Username from User ID</h2>
-    <input type="text" id="userId" placeholder="Enter User ID">
-    <input type="text" id="token2" placeholder="Enter Token">
-    <button onclick="getUsername()">Get Username</button>
-    <p id="usernameResult"></p>
-
+    <div class="container">
+        <h2>Fetch User ID from Username</h2>
+        <input type="text" id="username" placeholder="Enter EA ID">
+        <input type="text" id="token" placeholder="Enter Token">
+        <button onclick="getUserId()">Get User ID</button>
+        <p id="userIdResult"></p>
+    </div>
+    
+    <div class="container">
+        <h2>Fetch Username from User ID</h2>
+        <input type="text" id="userId" placeholder="Enter User ID">
+        <input type="text" id="token2" placeholder="Enter Token">
+        <button onclick="getUsername()">Get Username</button>
+        <p id="usernameResult"></p>
+    </div>
+    
+    <div class="container">
+        <h2>Get Your Token</h2>
+        <p>To get a token, visit the link and copy what's after "access_token"</p>
+        <a href="https://accounts.ea.com/connect/auth?client_id=ORIGIN_JS_SDK&response_type=token&redirect_uri=nucleus:rest&prompt=none&release_type=prod" target="_blank">Get Token</a>
+        <p>Example: QVQxOjIuMDozLjA6MjQwOjZQbm40...</p>
+    </div>
+    
+    <footer class="footer">
+        <p>© Fluffy-User - API Code</p>
+        <p>Nuuby/CargoPants - Servers, Translating API Code</p>
+    </footer>
+    
     <script>
-        const cloudflareProxy = "https://aged-hall-c269.nuublover29mc.workers.dev"; // Your Cloudflare Worker URL
-
+        const cloudflareProxy = "https://aged-hall-c269.nuublover29mc.workers.dev";
+        
         async function getUserId() {
             const name = document.getElementById("username").value;
             const token = document.getElementById("token").value;
@@ -36,17 +101,15 @@
 
                 const contentType = response.headers.get("Content-Type");
 
-                if (contentType && contentType.includes("xml")) {
-                    const xmlText = await response.text(); // Read the response as text (XML)
+                if (contentType.includes("xml")) {
+                    const xmlText = await response.text();
                     const parser = new DOMParser();
                     const xmlDoc = parser.parseFromString(xmlText, "application/xml");
                     const userId = xmlDoc.getElementsByTagName("userId")[0].textContent;
                     document.getElementById("userIdResult").innerText = `User ID: ${userId}`;
-                } else if (contentType && contentType.includes("json")) {
-                    const data = await response.json(); // Parse JSON if response is JSON
-                    document.getElementById("userIdResult").innerText = `User ID: ${data.userId}`;
                 } else {
-                    throw new Error("Unexpected response format.");
+                    const data = await response.json();
+                    document.getElementById("userIdResult").innerText = `User ID: ${data.userId}`;
                 }
             } catch (error) {
                 document.getElementById("userIdResult").innerText = `Error: ${error.message}`;
@@ -68,33 +131,20 @@
 
                 const contentType = response.headers.get("Content-Type");
 
-                if (contentType && contentType.includes("xml")) {
-                    const xmlText = await response.text(); // Read the response as text (XML)
+                if (contentType.includes("xml")) {
+                    const xmlText = await response.text();
                     const parser = new DOMParser();
                     const xmlDoc = parser.parseFromString(xmlText, "application/xml");
                     const EAID = xmlDoc.getElementsByTagName("EAID")[0].textContent;
                     document.getElementById("usernameResult").innerText = `EA ID: ${EAID}`;
-                } else if (contentType && contentType.includes("json")) {
-                    const data = await response.json(); // Parse JSON if response is JSON
-                    document.getElementById("usernameResult").innerText = `EA ID: ${data.users[0].EAID}`;
                 } else {
-                    throw new Error("Unexpected response format.");
+                    const data = await response.json();
+                    document.getElementById("usernameResult").innerText = `EA ID: ${data.users[0].EAID}`;
                 }
             } catch (error) {
                 document.getElementById("usernameResult").innerText = `Error: ${error.message}`;
             }
         }
     </script>
-</body>
-<body>
-	<h2>To get token, visit link and copy what's after the "access_token" </h2>
-	<a href="https://accounts.ea.com/connect/auth?client_id=ORIGIN_JS_SDK&response_type=token&redirect_uri=nucleus:rest&prompt=none&release_type=prod">https://accounts.ea.com/</a><h4></h4>
-	<p> example: QVQxOjIuMDozLjA6MjQwOjZQbm40WVM3aU96WHY3MlZMYUJRSHBQdWZpRXFxYVg4SlFFOjM5NDMzOnJtbTlo </p> 
-</body>
-<h1></h1>
-<body>
-<h3>Credits</h1>
-<p>Fluffy-User - API Code </p>
-<p>Nuuby/CargoPants - Servers, Translating API Code</p>
 </body>
 </html>
