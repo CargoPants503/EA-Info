@@ -1,5 +1,15 @@
-Get the PlayerId/UserId for EA accounts based on PlayerName
+Get the UserId from PlayerName or PlayerName from UserId
 
-Credits:
+Link: https://cargopants503.github.io/EA-Info/ 
+
+
+**Credits**:
+
 Fluffy-User [https://github.com/MasterTemple]
-        - All thr heavy lifting. Api + header information
+
+        - Api + header information
+CargoPants/Nuuby [https://github.com/CargoPants503]
+
+        - Website/Servers
+        - Code Translation
+        - UI
