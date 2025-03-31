@@ -61,6 +61,8 @@
         <input type="text" id="token" placeholder="Enter Token">
         <button onclick="getUserId()">Get User ID</button>
         <p id="userIdResult"></p>
+		<p id="personaIdResult1"></p>
+
     </div>
     
     <div class="container">
@@ -69,6 +71,7 @@
         <input type="text" id="token2" placeholder="Enter Token">
         <button onclick="getUsername()">Get Username</button>
         <p id="usernameResult"></p>
+		<p id="personaIdResult2"></p>
     </div>
     
     <div class="container">
@@ -107,7 +110,10 @@
                     const parser = new DOMParser();
                     const xmlDoc = parser.parseFromString(xmlText, "application/xml");
                     const userId = xmlDoc.getElementsByTagName("userId")[0].textContent;
+					const personaId1 = xmlDoc.getElementsByTagName("personaId")[0].textContent;
+					document.getElementById("personaIdResult1").innerText = `Persona ID: ${personaId1}`;
                     document.getElementById("userIdResult").innerText = `User ID: ${userId}`;
+
                 } else {
                     const data = await response.json();
                     document.getElementById("userIdResult").innerText = `User ID: ${data.userId}`;
@@ -137,7 +143,10 @@
                     const parser = new DOMParser();
                     const xmlDoc = parser.parseFromString(xmlText, "application/xml");
                     const EAID = xmlDoc.getElementsByTagName("EAID")[0].textContent;
+					const personaId2 = xmlDoc.getElementsByTagName("personaId")[0].textContent;
+					document.getElementById("personaIdResult2").innerText = `Persona ID: ${personaId2}`;
                     document.getElementById("usernameResult").innerText = `EA ID: ${EAID}`;
+					
                 } else {
                     const data = await response.json();
                     document.getElementById("usernameResult").innerText = `EA ID: ${data.users[0].EAID}`;
